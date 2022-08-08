@@ -1,0 +1,39 @@
+.leaflet-layer-image {
+    image-rendering: crisp-edges
+}
+.leaflet-container .leaflet-overlay-pane svg,
+.leaflet-container .leaflet-marker-pane img,
+.leaflet-container .leaflet-shadow-pane img,
+.leaflet-container .leaflet-tile-pane img,
+.leaflet-container img.leaflet-image-layer {
+    max-width: none !important;
+    /* Preserve crisp pixels with scaled up images */
+    image-rendering: optimizeSpeed;             /* Legal fallback */
+    image-rendering: -moz-crisp-edges;          /* Firefox        */
+    image-rendering: -o-crisp-edges;            /* Opera          */
+    image-rendering: -webkit-optimize-contrast; /* Safari         */
+    image-rendering: optimize-contrast;         /* CSS3 Proposed  */
+    image-rendering: crisp-edges;               /* CSS4 Proposed  */
+    image-rendering: pixelated;                 /* CSS4 Proposed  */
+    -ms-interpolation-mode: nearest-neighbor;   /* IE8+           */
+}
+
+.mouseposition {
+    font-size: 16pt;
+    color: white;
+    font-weight: bold;
+    background-color: black;
+    padding: 16px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-radius: 12px;
+}
+
+.triangle-up {
+    width: 0;
+    height: 0;
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+    border-bottom: 100px solid #32557f;
+}
+
