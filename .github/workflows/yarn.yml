@@ -12,6 +12,10 @@ jobs:
       - uses: borales/actions-yarn@v3.0.0
         with:
           cmd: build # will run `yarn build` command
-      - uses: borales/actions-yarn@v3.0.0
+      - name: capture build artifacts
+        if: ${{ runner.os == 'Linux' }}
+        uses: actions/upload-artifact@v2
         with:
-          cmd: test # will run `yarn test` command
+          name: Artifacts
+          path: dist/
+
