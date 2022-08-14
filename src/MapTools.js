@@ -1,10 +1,12 @@
 import * as L from "leaflet";
 
+import {regularNativeZoom} from "@/components/LeafletMap";
+
 const _rad = Math.PI / 180
 const _deg = 180 / Math.PI
 
 
-var mappp = "map not initialized!";
+export var mappp = "map not initialized!";
 
 
 export function setMap(newMap) {
@@ -78,4 +80,29 @@ export function clearWaypoints() {
     //     mappp.removeLayer(marker)
     // }
     // markers = []
+}
+
+let debugGrid = L.GridLayer.DebugCoords = L.GridLayer.extend({
+    createTile: function (coords) {
+        var tile = document.createElement('div');
+        tile.innerHTML = [coords.x - (1 << (coords.z - 1)), coords.y - (1 << (coords.z - 1))].join(', ');
+        tile.style.outline = '1px solid red';
+        tile.style.fontSize = "16px";
+        tile.style.textAlign = "center"
+        return tile;
+    }
+});
+
+L.gridLayer.debugCoords = function(opts) {
+    return new L.GridLayer.DebugCoords(opts);
+};
+
+let debugLayer =  L.gridLayer.debugCoords({minZoom: 16.5, maxZoom: 20, minNativeZoom: regularNativeZoom, maxNativeZoom: regularNativeZoom})
+
+export function enableDebugGrid() {
+    mappp.addLayer(debugLayer);
+}
+
+export function disableDebugGrid() {
+    mappp.removeLayer(debugLayer)
 }

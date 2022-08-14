@@ -33,13 +33,17 @@
     <label for="myfile">Add more waypoints (xaero format):</label>
     <input  type="file" id="myfile" name="myfile" accept="text/plain" @change="uploadWaypoints">
   </div>
+  <div style="padding: 8px">
+    <input type="checkbox" id="debugGrid" value="Debug Grid" v-model="debugGrid">
+    <label for="debugGrid">Debug Grid</label>
+  </div>
 
 </template>
 
 <script>
 import WaypointButton from "@/components/WaypointButton";
 import _ from "lodash";
-import {addWaypoint, clearWaypoints, distanceToMapCenter, popupWaypoint} from "@/MapTools";
+import {addWaypoint, clearWaypoints, disableDebugGrid, distanceToMapCenter, enableDebugGrid, popupWaypoint} from "@/MapTools";
 import emitter from 'tiny-emitter/instance'
 
 let interval = null
@@ -52,34 +56,9 @@ export default {
       search: "",
       continuous: false,
       reverse: false,
+      debugGrid: false,
       nextId: 0,
-      waypoints: [
-        {id: 1, name: 'first one', pos: {x: 2, y: 3, z: 4}},
-        {id: 2, name: 'another waypoint', pos: {x: 2, y: 3, z: 4}},
-        {id: 3, name: 'third test wp', pos: {x: 2, y: 3, z: 4}},
-        {id: 4, name: 'first one', pos: {x: 2, y: 3, z: 4}},
-        {id: 5, name: 'another waypoint', pos: {x: 2, y: 3, z: 4}},
-        {id: 6, name: 'third test wp', pos: {x: 2, y: 3, z: 4}},
-        {id: 7, name: 'first one', pos: {x: 2, y: 3, z: 4}},
-        {id: 8, name: 'another waypoint', pos: {x: 2, y: 3, z: 4}},
-        {id: 9, name: 'third test wp', pos: {x: 2, y: 3, z: 4}},
-        {id: 10, name: 'first one', pos: {x: 2, y: 3, z: 4}},
-        {id: 11, name: 'another waypoint', pos: {x: 2, y: 3, z: 4}},
-        {id: 13, name: 'third test wp', pos: {x: 2, y: 3, z: 4}},
-        {id: 14, name: 'first one', pos: {x: 2, y: 3, z: 4}},
-        {id: 15, name: 'another waypoint', pos: {x: 2, y: 3, z: 4}},
-        {id: 16, name: 'third test wp', pos: {x: 2, y: 3, z: 4}},
-        {id: 17, name: 'first one', pos: {x: 2, y: 3, z: 4}},
-        {id: 18, name: 'another waypoint', pos: {x: 2, y: 3, z: 4}},
-        {id: 19, name: 'third test wp', pos: {x: 2, y: 3, z: 4}},
-        {id: 20, name: 'first one', pos: {x: 2, y: 3, z: 4}},
-        {id: 21, name: 'another waypoint', pos: {x: 2, y: 3, z: 4}},
-        {id: 22, name: 'third test wp', pos: {x: 2, y: 3, z: 4}},
-        {id: 23, name: 'first one', pos: {x: 2, y: 3, z: 4}},
-        {id: 24, name: 'another waypoint', pos: {x: 2, y: 3, z: 4}},
-        {id: 25, name: 'third test wp', pos: {x: 2, y: 3, z: 4}},
-
-      ]
+      waypoints: []
     }
   },
   computed: {
@@ -167,6 +146,9 @@ export default {
     if (localStorage.reverse) {
       this.reverse = localStorage.reverse === 'true';
     }
+    if (localStorage.debugGrid) {
+      this.debugGrid = localStorage.debugGrid === 'true';
+    }
     this.fetchWaypoints()
 
     emitter.on('newWaypoint', (coords, name) => {
@@ -209,6 +191,13 @@ export default {
     sorting(newSorting) {
       localStorage.sorting = newSorting
       this.sort()
+    },
+    debugGrid(newDebugGrid) {
+      localStorage.debugGrid = newDebugGrid
+      if (newDebugGrid)
+        enableDebugGrid()
+      else
+        disableDebugGrid()
     }
   }
 }

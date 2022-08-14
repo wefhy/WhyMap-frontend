@@ -7,7 +7,7 @@ import * as L from "leaflet";
 import ContextMenu from "@/components/ContextMenu";
 import {createApp, defineComponent} from 'vue'
 import emitter from 'tiny-emitter/instance'
-import {deg2coord, setMap} from "@/MapTools";
+import {deg2coord, mappp, setMap} from "@/MapTools";
 
 const host = "http://localhost:7542"
 const url = host + "/tiles/{z}/{x}/{y}"
@@ -16,37 +16,32 @@ const defaultTileOptions = {
   attribution: '<a href="https://www.github.com/wefhy">wefhy</a>',
   noWrap: true
 }
-const thumbnailNativeZoom = 15
-const regularNativeZoom = 17
-const detailNativeZoom = 22
+export const thumbnailNativeZoom = 15
+export const regularNativeZoom = 17
+export const detailNativeZoom = 22
 
 export default {
   name: "LeafletMap",
   components: {
     ContextMenu
   },
-  data() {
-    return {
-      map: null
-    };
-  },
   methods: {
     setupLeafletMap: function () {
-      // let config = {
-      //   fadeAnimation: false,
-      //   zoomSnap: 0,
-      //   wheelDebounceTime: 16,
-      // }
-      this.map = L.map("mapContainer").setView([0,0], 18, )
-      setMap(this.map)
-      this.map.attributionControl.setPosition('topright')
-      let thumbnails = L.tileLayer(url, {...defaultTileOptions, minZoom: 14, maxZoom: 20, minNativeZoom: thumbnailNativeZoom, maxNativeZoom: thumbnailNativeZoom}).addTo(this.map);
-      let regularTiles = L.tileLayer(url, {...defaultTileOptions, minZoom: 17, maxZoom: 24, minNativeZoom: regularNativeZoom, maxNativeZoom: regularNativeZoom}).addTo(this.map);
-      let zoomTiles = L.tileLayer(url, {...defaultTileOptions, minZoom: 22, maxZoom: 24, minNativeZoom: detailNativeZoom, maxNativeZoom: detailNativeZoom}).addTo(this.map);
+      let config = {
+        // fadeAnimation: false,
+        zoomSnap: 0.2,
+        wheelDebounceTime: 16,
+      }
+      setMap(
+          L.map("mapContainer", config).setView([0,0], 18, )
+      )
+      mappp.attributionControl.setPosition('topright')
+      let thumbnails = L.tileLayer(url, {...defaultTileOptions, minZoom: 14, maxZoom: 20, minNativeZoom: thumbnailNativeZoom, maxNativeZoom: thumbnailNativeZoom}).addTo(mappp);
+      let regularTiles = L.tileLayer(url, {...defaultTileOptions, minZoom: 17, maxZoom: 24, minNativeZoom: regularNativeZoom, maxNativeZoom: regularNativeZoom}).addTo(mappp);
+      let zoomTiles = L.tileLayer(url, {...defaultTileOptions, minZoom: 21.5, maxZoom: 24, minNativeZoom: detailNativeZoom, maxNativeZoom: detailNativeZoom}).addTo(mappp);
 
       const popup = L.popup();
-      let tthis = this
-      this.map.on('contextmenu',function(latlng){
+      mappp.on('contextmenu',function(latlng){
         console.log(latlng);
         const mountPoint = document.createElement('div');
 
@@ -62,7 +57,7 @@ export default {
             mountPoint
         )
         popup.setLatLng(latlng.latlng);
-        tthis.map.openPopup(popup);
+        mappp.openPopup(popup);
 
       });
 
@@ -87,18 +82,18 @@ export default {
 
       let controlMousePosition = new Position({position: 'bottomleft'});
       let controlPlayerPosition = new Position({position: 'bottomright'});
-      this.map.addControl(controlMousePosition);
-      this.map.addControl(controlPlayerPosition);
+      mappp.addControl(controlMousePosition);
+      mappp.addControl(controlPlayerPosition);
 
 
-      this.map.addEventListener('mousemove', (event) => {
+      mappp.addEventListener('mousemove', (event) => {
         let xz = deg2coord(event.latlng.lat, event.latlng.lng)
         controlMousePosition.updateHTML("Mouse position: {x: " + xz[0] + ", z: " + xz[1] + "}");
       });
 
-      let thismap = this.map
+      let thismap = mappp
 
-      let playerMarker = L.marker([0, 0], {rotationAngle: 45}).addTo(this.map);
+      let playerMarker = L.marker([0, 0], {rotationAngle: 45}).addTo(mappp);
 
       fetch(host + "/player").then(function(response) {
         return response.json();
@@ -154,47 +149,23 @@ export default {
       }
 
       setInterval(updatePlayerPosition, 500)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    }
+      }
   },
   mounted() {
     this.setupLeafletMap();
     emitter.on('centerOn', (latlng) => {
       // console.log("Centering on " + latlng)
-      console.log("Centering on " + L.latLng(latlng) + "current Center: " + this.map.getCenter())
-      // if(this.map.getCenter() === latlng) {
-      //   this.map.setZoom(20)
+      console.log("Centering on " + L.latLng(latlng) + "current Center: " + mappp.getCenter())
+      // if(mappp.getCenter() === latlng) {
+      //   mappp.setZoom(20)
       // } else {
-      //   this.map.panTo(latlng)
+      //   mappp.panTo(latlng)
       // }
-      this.map.panTo(latlng)
+      mappp.panTo(latlng)
     })
   },
   // async beforeMount() {
-  //   this.mapIsReady = true;
+  //   mapppIsReady = true;
   // },
 };
 
