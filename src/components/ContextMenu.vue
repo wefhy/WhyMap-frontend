@@ -1,6 +1,7 @@
 <template>
   <div>Coords: {{getCoords()}}</div>
   <div>Block: {{block}}</div>
+  <div>Distance: {{distance}}m</div>
   <div>Overlay: {{overlay}}</div>
   <div>Biome: {{biome}}</div>
   <div>Height: {{height}}</div>
@@ -12,7 +13,7 @@
 
 <script>
 import emitter from 'tiny-emitter/instance'
-import {addWaypoint, deg2coord} from "@/MapTools";
+import {addWaypoint, deg2coord, distanceToPlayer} from "@/MapTools";
 export default {
   name: "ContextMenu",
   data() {
@@ -25,6 +26,12 @@ export default {
       height: "fetching...",
       depth: "fetching...",
       light: "fetching..."
+    }
+  },
+  computed: {
+    distance() {
+      let xz = deg2coord(this.position.lat, this.position.lng)
+      return distanceToPlayer(xz[0], xz[1]).toFixed(1)
     }
   },
   methods: {
