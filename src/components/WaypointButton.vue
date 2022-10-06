@@ -1,18 +1,26 @@
 <template>
   <div>
     <button class="glow-on-hover" type="button">
-      <span>{{waypointName}}</span><br/>
+      <span>{{waypointName}}</span><span v-if="showDistance"> ({{distance()}}m)</span><br/>
       <span>(x: {{coords.x}}, y: {{coords.y}}, z: {{coords.z}})</span>
     </button>
   </div>
 </template>
 
 <script>
+import {distanceToPlayer} from "@/MapTools";
+
 export default {
   name: "WaypointButton",
   props: {
     waypointName: String,
-    coords: Object
+    coords: Object,
+    showDistance: Boolean
+  },
+  methods: {
+    distance() {
+      return Math.ceil(distanceToPlayer(this.coords.x, this.coords.z))
+    }
   }
 }
 </script>

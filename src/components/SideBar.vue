@@ -27,7 +27,7 @@
     </select>
   </div>
   <transition-group name="flip-list" tag="div">
-    <WaypointButton v-for="waypoint in filteredItems" :key="waypoint.id" :waypoint-name="waypoint.name" :coords="waypoint.pos" @click="centerOn(waypoint.id, waypoint.loc)"></WaypointButton>
+    <WaypointButton v-for="waypoint in filteredItems" :key="waypoint.id" :waypoint-name="waypoint.name" :coords="waypoint.pos" :show-distance="showDistance" @click="centerOn(waypoint.id, waypoint.loc)"></WaypointButton>
   </transition-group>
   <div style="padding: 8px">
     <label for="myfile">Add more waypoints (xaero format):</label>
@@ -36,6 +36,10 @@
   <div style="padding: 8px">
     <input type="checkbox" id="debugGrid" value="Debug Grid" v-model="debugGrid">
     <label for="debugGrid">Debug Grid</label>
+  </div>
+  <div style="padding: 8px">
+    <input type="checkbox" id="showDistance" value="Show Distance" v-model="showDistance">
+    <label for="showDistance">Show Distance (reenable to update)</label>
   </div>
 
 </template>
@@ -55,6 +59,7 @@ export default {
       sorting: 'name',
       search: "",
       continuous: false,
+      showDistance: false,
       reverse: false,
       debugGrid: false,
       nextId: 0,
@@ -149,6 +154,9 @@ export default {
     if (localStorage.debugGrid) {
       this.debugGrid = localStorage.debugGrid === 'true';
     }
+    if (localStorage.showDistance) {
+      this.showDistance = localStorage.showDistance === 'true';
+    }
     this.fetchWaypoints()
 
     emitter.on('newWaypoint', (coords, name) => {
@@ -198,6 +206,9 @@ export default {
         enableDebugGrid()
       else
         disableDebugGrid()
+    },
+    showDistance(newShowDistance) {
+      localStorage.showDistance = newShowDistance
     }
   }
 }
