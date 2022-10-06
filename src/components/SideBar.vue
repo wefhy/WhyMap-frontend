@@ -20,7 +20,7 @@
 
     <select v-model="sorting">
       <option value="name">Name</option>
-      <option value="player" disabled="disabled">Distance to player</option>
+      <option value="player">Distance to player</option>
       <option value="map">Distance to map position</option>
 <!--      <option value="recent">Recent</option>-->
       <option value="newest">Newest</option>
@@ -43,7 +43,7 @@
 <script>
 import WaypointButton from "@/components/WaypointButton";
 import _ from "lodash";
-import {addWaypoint, clearWaypoints, disableDebugGrid, distanceToMapCenter, enableDebugGrid, popupWaypoint} from "@/MapTools";
+import {addWaypoint, clearWaypoints, disableDebugGrid, distanceToMapCenter, distanceToPlayer, enableDebugGrid, popupWaypoint} from "@/MapTools";
 import emitter from 'tiny-emitter/instance'
 
 let interval = null
@@ -78,7 +78,7 @@ export default {
       this.waypoints = _.orderBy(this.waypoints, [waypoint => waypoint.id], [this.reverse ? 'asc' : 'desc'])
     },
     sortByPlayerDistance() {
-
+      this.waypoints = _.orderBy(this.waypoints, [waypoint => distanceToPlayer(waypoint.pos.x, waypoint.pos.z)], [this.reverse ? 'desc' : 'asc'])
     },
     sortByMapDistance() {
       this.waypoints = _.orderBy(this.waypoints, [waypoint => distanceToMapCenter(waypoint.pos.x, waypoint.pos.z)], [this.reverse ? 'desc' : 'asc'])

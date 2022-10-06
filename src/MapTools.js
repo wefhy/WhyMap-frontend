@@ -1,9 +1,15 @@
+/***
+ * The most important reason for this file to exist (and not be handled by vue components) is deep proxying of Vue3:
+ * https://stackoverflow.com/questions/65981712/uncaught-typeerror-this-map-is-null-vue-js-3-leaflet
+ */
+
 import * as L from "leaflet";
 
 import {regularNativeZoom} from "@/components/LeafletMap";
 
 const _rad = Math.PI / 180
 const _deg = 180 / Math.PI
+let playerPos = [0, 0]
 
 
 export var mappp = "map not initialized!";
@@ -36,6 +42,15 @@ function getMapCenter() {
 export function distanceToMapCenter(x, z) {
     let mapCenter = getMapCenter()
     return Math.sqrt(Math.pow(x - mapCenter[0], 2) + Math.pow(z - mapCenter[1], 2))
+}
+
+export function setPlayerPosition(x, z) {
+    playerPos[0] = x
+    playerPos[1] = z
+}
+
+export function distanceToPlayer(x, z) {
+    return Math.sqrt(Math.pow(x - playerPos[0], 2) + Math.pow(z - playerPos[1], 2))
 }
 
 let markers = []

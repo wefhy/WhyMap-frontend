@@ -7,7 +7,7 @@ import * as L from "leaflet";
 import ContextMenu from "@/components/ContextMenu";
 import {createApp, defineComponent} from 'vue'
 import emitter from 'tiny-emitter/instance'
-import {deg2coord, mappp, setMap} from "@/MapTools";
+import {deg2coord, mappp, setMap, setPlayerPosition} from "@/MapTools";
 
 const host = "http://localhost:7542"
 const url = host + "/tiles/{z}/{x}/{y}"
@@ -141,6 +141,7 @@ export default {
           playerMarker.setIcon(icon)
 
           playerMarker.setLatLng(pos)
+          setPlayerPosition(player.position.x, player.position.z)
 
           controlPlayerPosition.updateHTML( "Player position: {x:" + player.position.x.toFixed(1) + ", y:" + player.position.y.toFixed(1) + ", z:" + player.position.z.toFixed(1) + "}")
         }).catch(function(reason) {
