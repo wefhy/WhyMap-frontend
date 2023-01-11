@@ -45,9 +45,9 @@
 </template>
 
 <script>
-import WaypointButton from "@/components/WaypointButton";
+import WaypointButton from "./WaypointButton.vue";
 import _ from "lodash";
-import {addWaypoint, clearWaypoints, disableDebugGrid, distanceToMapCenter, distanceToPlayer, enableDebugGrid, popupWaypoint} from "@/MapTools";
+import {addWaypoint, clearWaypoints, disableDebugGrid, distanceToMapCenter, distanceToPlayer, enableDebugGrid, popupWaypoint} from "../MapTools.js";
 import emitter from 'tiny-emitter/instance'
 
 let interval = null

@@ -4,10 +4,10 @@
 
 <script>
 import * as L from "leaflet";
-import ContextMenu from "@/components/ContextMenu";
+import ContextMenu from "./ContextMenu.vue";
 import {createApp, defineComponent} from 'vue'
 import emitter from 'tiny-emitter/instance'
-import {deg2coord, mappp, setMap, setPlayerPosition} from "@/MapTools";
+import {deg2coord, mappp, setMap, setPlayerPosition} from "../MapTools.js";
 
 const host = "http://localhost:7542"
 const url = host + "/tiles/{z}/{x}/{y}"

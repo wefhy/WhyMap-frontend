@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import {distanceToPlayer} from "@/MapTools";
+import {distanceToPlayer} from "../MapTools.js";
 
 export default {
   name: "WaypointButton",

@@ -13,7 +13,7 @@
 
 <script>
 import emitter from 'tiny-emitter/instance'
-import {addWaypoint, deg2coord, distanceToPlayer} from "@/MapTools";
+import {addWaypoint, deg2coord, distanceToPlayer} from "../MapTools.js";
 export default {
   name: "ContextMenu",
   data() {

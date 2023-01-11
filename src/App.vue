@@ -12,7 +12,7 @@
 
 <script>
 import SideBar from './components/SideBar.vue'
-import LeafletMap from "@/components/LeafletMap";
+import LeafletMap from "./components/LeafletMap.vue";
 
 export default {
   name: 'App',

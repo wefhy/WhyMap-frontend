@@ -5,7 +5,7 @@
 
 import * as L from "leaflet";
 
-import {regularNativeZoom} from "@/components/LeafletMap";
+import {regularNativeZoom} from "./components/LeafletMap.vue";
 
 const _rad = Math.PI / 180
 const _deg = 180 / Math.PI
