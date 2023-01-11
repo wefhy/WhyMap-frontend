@@ -1,3 +1,6 @@
 {
-  "plugins": ["only-warn"]
+  "plugins": ["only-warn"],
+  "env": {
+    "es2021": true
+  }
 }
