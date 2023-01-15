@@ -3,7 +3,7 @@ import App from './App.vue'
 import "leaflet/dist/leaflet.css";
 import "./main.css";
 // import MapMixin from "@/mixins/MapMixin";
-import MapMixin from "./MapTools";
+// import MapMixin from "./MapTools.js";
 
 let app = createApp(App)
 // app.mixin(MapMixin);
