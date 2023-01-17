@@ -13,6 +13,9 @@ let playerPos = [0, 0]
 
 
 export var mappp = "map not initialized!";
+export var FollowPlayer = false;
+
+export var RealTime = true;
 
 
 export function setMap(newMap) {
@@ -113,6 +116,15 @@ L.gridLayer.debugCoords = function(opts) {
 };
 
 let debugLayer =  L.gridLayer.debugCoords({minZoom: 16.5, maxZoom: 20, minNativeZoom: regularNativeZoom, maxNativeZoom: regularNativeZoom})
+
+
+export function setFollowPlayer(follow) {
+    FollowPlayer = follow
+}
+
+export function setRealTime(realTime) {
+    RealTime = realTime
+}
 
 export function enableDebugGrid() {
     mappp.addLayer(debugLayer);

@@ -1,6 +1,14 @@
 <template>
   <div class="custom-select">
 <!--        <div class="label">Sorting by {{sorting}}, reverse: {{reverse}}, continuous: {{continuous}}</div>-->
+    <div style="padding: 8px">
+      <input type="checkbox" id="followPlayer" value="Follow Player" v-model="followPlayer">
+      <label for="followPlayer">Follow Player</label>
+    </div>
+    <div style="padding: 8px">
+      <input type="checkbox" id="realTime" value="Real Time Updates" v-model="realTime">
+      <label for="realTime">Real Time Updates</label>
+    </div>
     <div id="search-div" class="inline-container">
       <label for="search">Search:</label>
       <input id="search" type="text" v-model="search">
@@ -43,15 +51,7 @@
   </div>
   <div style="padding: 8px">
     <input type="checkbox" id="animations" value="Animations" v-model="animations">
-    <label for="animations">Animations (won't work with real time)</label>
-  </div>
-  <div style="padding: 8px">
-    <input type="checkbox" id="realTime" value="Real Time Updates" v-model="realTime">
-    <label for="realTime">Real Time Updates</label>
-  </div>
-  <div style="padding: 8px">
-    <input type="checkbox" id="followPlayer" value="Follow Player" v-model="followPlayer">
-    <label for="followPlayer">Follow Player</label>
+    <label for="animations">Fade Animations (will be ugly with real time)</label>
   </div>
 
 </template>
@@ -67,7 +67,7 @@ import {
   distanceToPlayer,
   enableDebugGrid,
   mappp,
-  popupWaypoint
+  popupWaypoint, setFollowPlayer, setRealTime
 } from "../MapTools.js";
 import emitter from 'tiny-emitter/instance'
 
@@ -182,9 +182,9 @@ export default {
       this.animations = localStorage.animations === 'true';
     }
     if (localStorage.realTime) {
-      this.realTime = localStorage.realTime === 'true';
+      this.realTime = localStorage.realTime !== 'false';
     }
-    if (localStorage.realTime) {
+    if (localStorage.followPlayer) {
       this.followPlayer = localStorage.followPlayer === 'true';
     }
     if (localStorage.showDistance) {
@@ -213,6 +213,10 @@ export default {
         body: JSON.stringify(newWaypoint)
       })
     })
+    emitter.on('movestart', () => {
+      this.followPlayer = false
+    })
+
   },
   watch: {
     continuous(newContinuous) {
@@ -246,11 +250,11 @@ export default {
     },
     realTime(newRealTime) {
       localStorage.realTime = newRealTime
-      //TODO
+      setRealTime(newRealTime)
     },
     followPlayer(newFollowPlayer) {
       localStorage.followPlayer = newFollowPlayer
-      //TODO
+      setFollowPlayer(newFollowPlayer)
     },
     showDistance(newShowDistance) {
       localStorage.showDistance = newShowDistance

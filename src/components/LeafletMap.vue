@@ -7,7 +7,7 @@ import * as L from "leaflet";
 import ContextMenu from "./ContextMenu.vue";
 import {createApp, defineComponent} from 'vue'
 import emitter from 'tiny-emitter/instance'
-import {deg2coord, mappp, setMap, setPlayerPosition, TileHandler} from "../MapTools.js";
+import {deg2coord, FollowPlayer, mappp, RealTime, setMap, setPlayerPosition, TileHandler} from "../MapTools.js";
 
 const host = "http://localhost:7542"
 const url = host + "/tiles/{z}/{x}/{y}"
@@ -36,6 +36,8 @@ export default {
       setMap(
           L.map("mapContainer", config).setView([0,0], 18, )
       )
+      mappp.on('movestart', () => emitter.emit('movestart'))
+
       mappp.attributionControl.setPosition('topright')
       let thumbnails = L.tileLayer(url, {...defaultTileOptions, minZoom: 14, maxZoom: 20, minNativeZoom: thumbnailNativeZoom, maxNativeZoom: thumbnailNativeZoom}).addTo(mappp);
       let regularTiles = L.tileLayer(url, {...defaultTileOptions, minZoom: 17, maxZoom: 24, minNativeZoom: regularNativeZoom, maxNativeZoom: regularNativeZoom}).addTo(mappp);
@@ -104,7 +106,7 @@ export default {
         return response.json();
       }).then(function(player) {
         let pos = new L.LatLng(player.position.lat, player.position.lng)
-        thismap.panTo(pos);
+        thismap.panTo(pos, {noMoveStart: true});
       }).catch(function(reason) {
         console.log("Booo: " + reason);
       });
@@ -131,6 +133,7 @@ export default {
 
       let lastTilesUpdate = 0
       function updateOldTiles() {
+        if (!RealTime) return;
         fetch(host + "/lastUpdates/" + lastTilesUpdate).then(r => r.json()).then(updateData => {
           console.log("Updates: " + JSON.stringify(updateData))
           console.log("Updates2: " + JSON.stringify(updateData.updates))
@@ -149,8 +152,9 @@ export default {
         })
       }
 
-      setInterval(updateOldTiles, 1000)
+      setInterval(updateOldTiles, 1050)
 
+      const playerUpdateInterval = 100 //ms
 
       function updatePlayerPosition() {
         fetch(host + "/player").then(function(response) {
@@ -163,7 +167,9 @@ export default {
             className: "my-custom-player",
             html: `<span style="${markerHtmlStyles} transform: rotate(${player.angle}deg);" />`
           })
-
+          if (FollowPlayer) {
+            mappp.panTo(pos, {duration: playerUpdateInterval * 0.001, easeLinearity: 1.0, noMoveStart: true})
+          }
 
           playerMarker.setIcon(icon)
 
@@ -176,7 +182,7 @@ export default {
         });
       }
 
-      setInterval(updatePlayerPosition, 500)
+      setInterval(updatePlayerPosition, playerUpdateInterval)
       }
   },
   mounted() {
