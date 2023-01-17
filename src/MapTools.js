@@ -100,7 +100,7 @@ export function clearWaypoints() {
 let debugGrid = L.GridLayer.DebugCoords = L.GridLayer.extend({
     createTile: function (coords) {
         var tile = document.createElement('div');
-        tile.innerHTML = [coords.x - (1 << (coords.z - 1)), coords.y - (1 << (coords.z - 1))].join(', ');
+        tile.innerHTML = [coords.x - (1 << (coords.z - 1)), coords.y - (1 << (coords.z - 1))].join(', ') + ", abs: " + [coords.x, coords.y].join(", ");
         tile.style.outline = '1px solid red';
         tile.style.fontSize = "16px";
         tile.style.textAlign = "center"
@@ -120,4 +120,43 @@ export function enableDebugGrid() {
 
 export function disableDebugGrid() {
     mappp.removeLayer(debugLayer)
+}
+
+export function getTileURL(lat, lng, zoom) {
+    let xtile = parseInt(Math.floor( (lng + 180) / 360 * (1<<zoom) ));
+    let ytile = parseInt(Math.floor( (1 - Math.log(Math.tan(lat.toRad()) + 1 / Math.cos(lat.toRad())) / Math.PI) / 2 * (1<<zoom) ));
+    return "" + zoom + "/" + xtile + "/" + ytile;
+}
+
+function VectorToString(vector) {
+    return vector.x + "." + vector.y
+}
+
+export class TileHandler {
+    constructor(layer){
+        this.layer = layer
+        this.layers = {}
+
+        this.layer.on('tileloadstart', (tile) =>  {
+            this.layers[VectorToString(tile.coords)] = tile
+        })
+
+
+        this.layer.on('tileunload', (tile) => {
+            delete this.layers[VectorToString(tile.coords)]
+        })
+    }
+
+    update(position){
+        const tile = this.layers[VectorToString(position)]
+        if (!tile) return
+        const url = L.Util.template(tile.target._url, {
+            ...position,
+            // time: new Date().getTime()
+        })
+        if (!tile) return
+        console.log("dupa: " + JSON.stringify(Object.keys(this.layers)))
+        tile.tile.src = url + "?time=" + new Date().getTime()
+        console.log(tile.tile.src)
+    }
 }

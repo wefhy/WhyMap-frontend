@@ -41,13 +41,34 @@
     <input type="checkbox" id="showDistance" value="Show Distance" v-model="showDistance">
     <label for="showDistance">Show Distance (reenable to update)</label>
   </div>
+  <div style="padding: 8px">
+    <input type="checkbox" id="animations" value="Animations" v-model="animations">
+    <label for="animations">Animations (won't work with real time)</label>
+  </div>
+  <div style="padding: 8px">
+    <input type="checkbox" id="realTime" value="Real Time Updates" v-model="realTime">
+    <label for="realTime">Real Time Updates</label>
+  </div>
+  <div style="padding: 8px">
+    <input type="checkbox" id="followPlayer" value="Follow Player" v-model="followPlayer">
+    <label for="followPlayer">Follow Player</label>
+  </div>
 
 </template>
 
 <script>
 import WaypointButton from "./WaypointButton.vue";
 import _ from "lodash";
-import {addWaypoint, clearWaypoints, disableDebugGrid, distanceToMapCenter, distanceToPlayer, enableDebugGrid, popupWaypoint} from "../MapTools.js";
+import {
+  addWaypoint,
+  clearWaypoints,
+  disableDebugGrid,
+  distanceToMapCenter,
+  distanceToPlayer,
+  enableDebugGrid,
+  mappp,
+  popupWaypoint
+} from "../MapTools.js";
 import emitter from 'tiny-emitter/instance'
 
 let interval = null
@@ -62,6 +83,9 @@ export default {
       showDistance: false,
       reverse: false,
       debugGrid: false,
+      animations: false,
+      realTime: false,
+      followPlayer: false,
       nextId: 0,
       waypoints: []
     }
@@ -154,6 +178,15 @@ export default {
     if (localStorage.debugGrid) {
       this.debugGrid = localStorage.debugGrid === 'true';
     }
+    if (localStorage.animations) {
+      this.animations = localStorage.animations === 'true';
+    }
+    if (localStorage.realTime) {
+      this.realTime = localStorage.realTime === 'true';
+    }
+    if (localStorage.realTime) {
+      this.followPlayer = localStorage.followPlayer === 'true';
+    }
     if (localStorage.showDistance) {
       this.showDistance = localStorage.showDistance === 'true';
     }
@@ -206,6 +239,18 @@ export default {
         enableDebugGrid()
       else
         disableDebugGrid()
+    },
+    animations(newAnimations) {
+      localStorage.animations = newAnimations
+      mappp._fadeAnimated = (newAnimations === true)
+    },
+    realTime(newRealTime) {
+      localStorage.realTime = newRealTime
+      //TODO
+    },
+    followPlayer(newFollowPlayer) {
+      localStorage.followPlayer = newFollowPlayer
+      //TODO
     },
     showDistance(newShowDistance) {
       localStorage.showDistance = newShowDistance

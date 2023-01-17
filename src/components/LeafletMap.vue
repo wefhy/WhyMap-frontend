@@ -7,14 +7,15 @@ import * as L from "leaflet";
 import ContextMenu from "./ContextMenu.vue";
 import {createApp, defineComponent} from 'vue'
 import emitter from 'tiny-emitter/instance'
-import {deg2coord, mappp, setMap, setPlayerPosition} from "../MapTools.js";
+import {deg2coord, mappp, setMap, setPlayerPosition, TileHandler} from "../MapTools.js";
 
 const host = "http://localhost:7542"
 const url = host + "/tiles/{z}/{x}/{y}"
 const defaultTileOptions = {
   tileSize: 256,
+  fadeAnimation: false,
   attribution: '<a href="https://www.github.com/wefhy">wefhy</a>',
-  noWrap: true
+  noWrap: true,
 }
 export const thumbnailNativeZoom = 15
 export const regularNativeZoom = 17
@@ -28,7 +29,7 @@ export default {
   methods: {
     setupLeafletMap: function () {
       let config = {
-        // fadeAnimation: false,
+        fadeAnimation: false,
         zoomSnap: 0.2,
         wheelDebounceTime: 16,
       }
@@ -39,6 +40,10 @@ export default {
       let thumbnails = L.tileLayer(url, {...defaultTileOptions, minZoom: 14, maxZoom: 20, minNativeZoom: thumbnailNativeZoom, maxNativeZoom: thumbnailNativeZoom}).addTo(mappp);
       let regularTiles = L.tileLayer(url, {...defaultTileOptions, minZoom: 17, maxZoom: 24, minNativeZoom: regularNativeZoom, maxNativeZoom: regularNativeZoom}).addTo(mappp);
       let zoomTiles = L.tileLayer(url, {...defaultTileOptions, minZoom: 21.5, maxZoom: 24, minNativeZoom: detailNativeZoom, maxNativeZoom: detailNativeZoom}).addTo(mappp);
+
+      let thumbnailHandler = new TileHandler(thumbnails)
+      let zoomTileHandler = new TileHandler(zoomTiles)
+      let regularTileHandler = new TileHandler(regularTiles)
 
       const popup = L.popup();
       mappp.on('contextmenu',function(latlng){
@@ -123,6 +128,28 @@ export default {
       //
       //
       // playerMarker.setIcon(icon)
+
+      let lastTilesUpdate = 0
+      function updateOldTiles() {
+        fetch(host + "/lastUpdates/" + lastTilesUpdate).then(r => r.json()).then(updateData => {
+          console.log("Updates: " + JSON.stringify(updateData))
+          console.log("Updates2: " + JSON.stringify(updateData.updates))
+          lastTilesUpdate = updateData.time
+          updateData.updates.forEach(update => {
+            var tile = {x: update.x + (1 << (16)), y: update.z + (1 << (16)) , z: 17}
+            console.log("Updating tilex: " + JSON.stringify(update))
+            console.log("Updating tiley: " + JSON.stringify(tile))
+
+            // regularTileHandler.update(update)
+            regularTileHandler.update(tile)
+          })
+          // for (const update in updateData.updates) { //TODO why for in loop doesn't work? I hate JS
+          //   console.log("Updating tilee: " + JSON.stringify(update))
+          // }
+        })
+      }
+
+      setInterval(updateOldTiles, 1000)
 
 
       function updatePlayerPosition() {

@@ -9,6 +9,7 @@
   <div>Light: {{light}}</div>
   <button @click="centerOn">Center on</button>
   <button @click="newWaypoint">Create new waypoint</button>
+  <button @click="reloadTile">Force reload tile</button>
 </template>
 
 <script>
@@ -43,6 +44,9 @@ export default {
       let name = prompt("Select name for the waypoint:", "");
       emitter.emit('newWaypoint', deg2coord(this.position.lat, this.position.lng), name)
       addWaypoint({name: name, loc: {lat: this.position.lat, lng: this.position.lng}})
+    },
+    reloadTile() {
+
     },
     getCoords() {
       return deg2coord(this.position.lat, this.position.lng)
