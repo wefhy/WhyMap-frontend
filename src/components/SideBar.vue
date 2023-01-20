@@ -1,14 +1,23 @@
 <template>
+  <div class="custom-select" style="display: flex">
+    <label for="dimension" style="padding-top: 16px">Dimension:</label>
+    <select id="dimension" v-model="dimension" style="flex-grow: 1">
+      <option value="auto">Auto</option>
+      <option value="overworld">Overworld</option>
+      <option value="nether">Nether</option>
+      <option value="end">End</option>
+    </select>
+  </div>
+  <div style="padding: 8px; white-space: nowrap">
+    <input type="checkbox" id="followPlayer" value="Follow Player" v-model="followPlayer">
+    <label for="followPlayer">Follow Player</label>
+    <input type="checkbox" id="realTime" value="Real Time" v-model="realTime">
+    <label for="realTime">Real Time Updates</label>
+  </div>
+  <hr>
+
   <div class="custom-select">
 <!--        <div class="label">Sorting by {{sorting}}, reverse: {{reverse}}, continuous: {{continuous}}</div>-->
-    <div style="padding: 8px">
-      <input type="checkbox" id="followPlayer" value="Follow Player" v-model="followPlayer">
-      <label for="followPlayer">Follow Player</label>
-    </div>
-    <div style="padding: 8px">
-      <input type="checkbox" id="realTime" value="Real Time Updates" v-model="realTime">
-      <label for="realTime">Real Time Updates</label>
-    </div>
     <div id="search-div" class="inline-container">
       <label for="search">Search:</label>
       <input id="search" type="text" v-model="search">
@@ -37,6 +46,7 @@
   <transition-group name="flip-list" tag="div">
     <WaypointButton v-for="waypoint in filteredItems" :key="waypoint.id" :waypoint-name="waypoint.name" :coords="waypoint.pos" :show-distance="showDistance" @click="centerOn(waypoint.id, waypoint.loc)"></WaypointButton>
   </transition-group>
+  <hr>
   <div style="padding: 8px">
     <label for="myfile">Add more waypoints (xaero format):</label>
     <input  type="file" id="myfile" name="myfile" accept="text/plain" @change="uploadWaypoints">
@@ -53,6 +63,7 @@
     <input type="checkbox" id="animations" value="Animations" v-model="animations">
     <label for="animations">Fade Animations (will be ugly with real time)</label>
   </div>
+  <hr>
 
 </template>
 
@@ -78,6 +89,7 @@ export default {
   data() {
     return {
       sorting: 'name',
+      dimension: 'auto',
       search: "",
       continuous: false,
       showDistance: false,

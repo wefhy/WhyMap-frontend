@@ -10,12 +10,19 @@ import emitter from 'tiny-emitter/instance'
 import {deg2coord, FollowPlayer, mappp, RealTime, setMap, setPlayerPosition, TileHandler} from "../MapTools.js";
 
 const host = "http://localhost:7542"
-const url = host + "/tiles/{z}/{x}/{y}"
+const url = host + "/tiles/{z}/{x}/{y}?dimension={dimension}"
+const dimensionVal = {
+  item: Math.random(),
+  toString: function(){
+    return this.item;
+  }
+}
 const defaultTileOptions = {
   tileSize: 256,
   fadeAnimation: false,
   attribution: '<a href="https://www.github.com/wefhy">wefhy</a>',
   noWrap: true,
+  dimension: dimensionVal
 }
 export const thumbnailNativeZoom = 15
 export const regularNativeZoom = 17
@@ -130,18 +137,36 @@ export default {
       //
       //
       // playerMarker.setIcon(icon)
-
+      let lastEventsUpdate = 0
       let lastTilesUpdate = 0
+
+      function centerOnPlayerOnce() {
+        fetch(host + "/player").then(r => r.json()).then(player => {
+          let pos = new L.LatLng(player.position.lat, player.position.lng)
+          mappp.panTo(pos, {animate: false})
+        })
+      }
       function updateOldTiles() {
+        fetch(host + "/worldEvents/" + lastEventsUpdate).then(r => r.json()).then(updateData => {
+          console.log("Events: " + JSON.stringify(updateData))
+          lastEventsUpdate = updateData.time
+          updateData.updates.forEach(update => {
+            if (update === "DimensionChange" || update === "EnterWorld") {
+              lastTilesUpdate = updateData.time
+              dimensionVal.item = Math.random()
+              thumbnails.redraw()
+              regularTiles.redraw()
+              zoomTiles.redraw()
+              centerOnPlayerOnce()
+            }
+          })
+        })
         if (!RealTime) return;
         fetch(host + "/lastUpdates/" + lastTilesUpdate).then(r => r.json()).then(updateData => {
           console.log("Updates: " + JSON.stringify(updateData))
-          console.log("Updates2: " + JSON.stringify(updateData.updates))
           lastTilesUpdate = updateData.time
           updateData.updates.forEach(update => {
             var tile = {x: update.x + (1 << (16)), y: update.z + (1 << (16)) , z: 17}
-            console.log("Updating tilex: " + JSON.stringify(update))
-            console.log("Updating tiley: " + JSON.stringify(tile))
 
             // regularTileHandler.update(update)
             regularTileHandler.update(tile)
