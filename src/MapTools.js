@@ -167,8 +167,6 @@ export class TileHandler {
             // time: new Date().getTime()
         })
         if (!tile) return
-        console.log("dupa: " + JSON.stringify(Object.keys(this.layers)))
         tile.tile.src = url + "?time=" + new Date().getTime()
-        console.log(tile.tile.src)
     }
 }
