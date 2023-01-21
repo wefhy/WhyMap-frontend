@@ -17,6 +17,12 @@ export var FollowPlayer = false;
 
 export var RealTime = true;
 
+export const dimensionVal = {
+    item: Math.random(),
+    toString: function(){
+        return this.item;
+    }
+}
 
 export function setMap(newMap) {
     mappp = newMap
@@ -164,6 +170,7 @@ export class TileHandler {
         if (!tile) return
         const url = L.Util.template(tile.target._url, {
             ...position,
+            dimension: dimensionVal
             // time: new Date().getTime()
         })
         if (!tile) return

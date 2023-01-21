@@ -7,23 +7,19 @@ import * as L from "leaflet";
 import ContextMenu from "./ContextMenu.vue";
 import {createApp, defineComponent} from 'vue'
 import emitter from 'tiny-emitter/instance'
-import {deg2coord, FollowPlayer, mappp, RealTime, setMap, setPlayerPosition, TileHandler} from "../MapTools.js";
+import {
+  deg2coord,
+  dimensionVal,
+  FollowPlayer,
+  mappp,
+  RealTime,
+  setMap,
+  setPlayerPosition,
+  TileHandler
+} from "../MapTools.js";
 
 const host = "http://localhost:7542"
 const url = host + "/tiles/{z}/{x}/{y}?dimension={dimension}"
-const dimensionVal = {
-  item: Math.random(),
-  toString: function(){
-    return this.item;
-  }
-}
-const defaultTileOptions = {
-  tileSize: 256,
-  fadeAnimation: false,
-  attribution: '<a href="https://www.github.com/wefhy">wefhy</a>',
-  noWrap: true,
-  dimension: dimensionVal
-}
 export const thumbnailNativeZoom = 15
 export const regularNativeZoom = 17
 export const detailNativeZoom = 22
@@ -35,6 +31,13 @@ export default {
   },
   methods: {
     setupLeafletMap: function () {
+      const defaultTileOptions = {
+        tileSize: 256,
+        fadeAnimation: false,
+        attribution: '<a href="https://www.github.com/wefhy">wefhy</a>',
+        noWrap: true,
+        dimension: dimensionVal
+      }
       let config = {
         fadeAnimation: false,
         zoomSnap: 0.2,
