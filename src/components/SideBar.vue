@@ -1,13 +1,13 @@
 <template>
-  <div class="custom-select" style="display: flex">
-    <label for="dimension" style="padding-top: 16px">Dimension:</label>
-    <select id="dimension" v-model="dimension" style="flex-grow: 1">
-      <option value="auto">Auto</option>
-      <option value="overworld">Overworld</option>
-      <option value="nether">Nether</option>
-      <option value="end">End</option>
-    </select>
-  </div>
+<!--  <div class="custom-select" style="display: flex">-->
+<!--    <label for="dimension" style="padding-top: 16px">Dimension:</label>-->
+<!--    <select id="dimension" v-model="dimension" style="flex-grow: 1">-->
+<!--      <option value="auto">Auto</option>-->
+<!--      <option value="overworld">Overworld</option>-->
+<!--      <option value="nether">Nether</option>-->
+<!--      <option value="end">End</option>-->
+<!--    </select>-->
+<!--  </div>-->
   <div style="padding: 8px; white-space: nowrap">
     <input type="checkbox" id="followPlayer" value="Follow Player" v-model="followPlayer">
     <label for="followPlayer">Follow Player</label>

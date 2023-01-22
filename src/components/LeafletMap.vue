@@ -149,20 +149,22 @@ export default {
           mappp.panTo(pos, {animate: false})
         })
       }
+
+      let firstUpdate = true
       function updateOldTiles() {
         fetch(host + "/worldEvents/" + lastEventsUpdate).then(r => r.json()).then(updateData => {
           console.log("Events: " + JSON.stringify(updateData))
           lastEventsUpdate = updateData.time
-          updateData.updates.forEach(update => {
-            if (update === "DimensionChange" || update === "EnterWorld") {
-              lastTilesUpdate = updateData.time
-              dimensionVal.item = Math.random()
-              thumbnails.redraw()
-              regularTiles.redraw()
-              zoomTiles.redraw()
-              centerOnPlayerOnce()
-            }
-          })
+          let shouldReloadAll = updateData.updates.some(u => ((u === "DimensionChange") || ((u === "EnterWorld") && !firstUpdate)))
+          if (shouldReloadAll) {
+            lastTilesUpdate = updateData.time
+            dimensionVal.item = Math.random()
+            thumbnails.redraw()
+            regularTiles.redraw()
+            zoomTiles.redraw()
+            centerOnPlayerOnce()
+          }
+          firstUpdate = false
         })
         if (!RealTime) return;
         fetch(host + "/lastUpdates/" + lastTilesUpdate).then(r => r.json()).then(updateData => {
