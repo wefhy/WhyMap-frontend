@@ -20,8 +20,13 @@
 <!--        <div class="label">Sorting by {{sorting}}, reverse: {{reverse}}, continuous: {{continuous}}</div>-->
     <div id="search-div" class="inline-container">
       <label for="search">Search:</label>
-      <input id="search" type="text" v-model="search">
+      <input id="search" type="text" v-model="search" placeholder="x,z or waypoint name" v-on:keyup.enter="centerOnSearch()">
     </div>
+    <Transition>
+      <button class="fw-button" v-if="showCenterOn" @click="centerOnSearch()">
+        Center on {{centerCoords}}
+      </button>
+    </Transition>
     <div class="inline-container">
       <input type="checkbox" id="reverse" value="Reverse" v-model="reverse">
       <label for="reverse">Reverse</label>
@@ -72,7 +77,7 @@ import WaypointButton from "./WaypointButton.vue";
 import _ from "lodash";
 import {
   addWaypoint,
-  clearWaypoints,
+  clearWaypoints, coord2deg,
   disableDebugGrid,
   distanceToMapCenter,
   distanceToPlayer,
@@ -108,9 +113,22 @@ export default {
         return item.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1
         //TODO search should also make waypoints disappear visually from the map!
       })
+    },
+    searchSplit() {
+      return this.search.split(",").map(it => parseInt(it))
+    },
+    showCenterOn() {
+      let l = this.searchSplit.length
+      return (l === 2 || l === 3) && this.searchSplit.some(it => !isNaN(it))
+    },
+    centerCoords() {
+      let l = this.searchSplit.length
+      let s = this.searchSplit.map(it => isNaN(it) ? 0 : it)
+      return [s[0], s[l-1]]
     }
   },
   methods: {
+    coord2deg,
     sortByName() {
       console.log(this.waypoints)
       this.waypoints = _.orderBy(this.waypoints, [waypoint => waypoint.name.toLowerCase()], [this.reverse ? 'desc' : 'asc'])
@@ -141,6 +159,13 @@ export default {
     },
     centerOn(i, latLng) {
       popupWaypoint(i)
+      emitter.emit('centerOn', latLng)
+    },
+    centerOnSearch() {
+      if (!this.showCenterOn) return
+      let coords = this.centerCoords
+      let latLng = coord2deg(coords[0], coords[1])
+      emitter.emit('contextmenu', latLng)
       emitter.emit('centerOn', latLng)
     },
     shuffle() {
@@ -279,6 +304,8 @@ export default {
 
 label {
   margin: 0 1em 0 .4em;
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 .label {
   text-align: center;
@@ -341,6 +368,16 @@ label {
   margin-top: 8px;
   /*left: 50%;*/
   /*right: 50%;*/
+}
+
+.fw-button {
+  text-align: center;
+  border: 1px solid;
+  font-size: 12pt;
+  border-radius: 4px;
+  padding: 0.4em 0.6em;
+  width: 100%;
+  margin-top: 8px;
 }
 
 #sidebar {

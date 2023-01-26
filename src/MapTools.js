@@ -42,6 +42,19 @@ export function deg2coord(lat, lng) {
         ((normalized[1] - 0.5) * scale).toFixed(1)
     ]
 }
+function normalized2deg(x, y) {
+    let lng = x * 360 - 180
+    let lat = Math.atan(Math.sinh(Math.PI * (1 - 2 * y))) * 180 / Math.PI
+    return {lat: lat, lng: lng}
+}
+
+export function coord2deg(x, y) {
+    let scale = Math.pow(0.5, 26)
+    return normalized2deg(
+        (x * scale + 0.5),
+        (y * scale + 0.5)
+    )
+}
 
 function getMapCenter() {
     let latLng = mappp.getCenter();

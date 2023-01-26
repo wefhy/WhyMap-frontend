@@ -1,7 +1,7 @@
 <template>
   <div>Coords: {{getCoords()}}</div>
-  <div>Block: {{block}}</div>
   <div>Distance: {{distance}}m</div>
+  <div>Block: {{block}}</div>
   <div>Overlay: {{overlay}}</div>
   <div>Biome: {{biome}}</div>
   <div>Height: {{height}}</div>
@@ -9,7 +9,7 @@
   <div>Light: {{light}}</div>
   <button @click="centerOn">Center on</button>
   <button @click="newWaypoint">Create new waypoint</button>
-  <button @click="reloadTile">Force reload tile</button>
+<!--  <button @click="reloadTile">Force reload tile</button>-->
 </template>
 
 <script>

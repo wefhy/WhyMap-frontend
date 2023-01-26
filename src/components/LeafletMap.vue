@@ -58,14 +58,13 @@ export default {
       let regularTileHandler = new TileHandler(regularTiles)
 
       const popup = L.popup();
-      mappp.on('contextmenu',function(latlng){
+      let createContextMenu = function(latlng){
         console.log(latlng);
         const mountPoint = document.createElement('div');
-
         const menu = defineComponent({
           extends: ContextMenu, data() {
             return {
-              position: latlng.latlng
+              position: latlng
             }
           }
         })
@@ -73,10 +72,12 @@ export default {
         popup.setContent(
             mountPoint
         )
-        popup.setLatLng(latlng.latlng);
+        popup.setLatLng(latlng);
         mappp.openPopup(popup);
+      };
 
-      });
+      mappp.on('contextmenu',pos => createContextMenu(pos.latLng));
+      emitter.on('contextmenu',createContextMenu);
 
 
 
