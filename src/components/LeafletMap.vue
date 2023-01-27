@@ -37,6 +37,12 @@ export default {
         attribution: '<a href="https://www.github.com/wefhy">wefhy</a>',
         noWrap: true,
         dimension: dimensionVal
+        // style: {"opacity": 0.5},
+        // opacity: 0.5,
+        // background: "yellow",
+        // transparency: 'true',
+        // transparent: 'true',
+        // format: 'image/png'
       }
       let config = {
         fadeAnimation: false,
@@ -142,7 +148,9 @@ export default {
       //
       // playerMarker.setIcon(icon)
       let lastEventsUpdate = 0
-      let lastTilesUpdate = 0
+      let lastRegionUpdate = 0
+      let lastThumbnailUpdate = 0
+      let lastChunkUpdate = 0
 
       function centerOnPlayerOnce() {
         fetch(host + "/player").then(r => r.json()).then(player => {
@@ -154,11 +162,12 @@ export default {
       let firstUpdate = true
       function updateOldTiles() {
         fetch(host + "/worldEvents/" + lastEventsUpdate).then(r => r.json()).then(updateData => {
-          console.log("Events: " + JSON.stringify(updateData))
           lastEventsUpdate = updateData.time
           let shouldReloadAll = updateData.updates.some(u => ((u === "DimensionChange") || ((u === "EnterWorld") && !firstUpdate)))
           if (shouldReloadAll) {
-            lastTilesUpdate = updateData.time
+            lastRegionUpdate = updateData.time
+            lastChunkUpdate = updateData.time
+            lastThumbnailUpdate = updateData.time
             dimensionVal.item = Math.random()
             thumbnails.redraw()
             regularTiles.redraw()
@@ -168,19 +177,20 @@ export default {
           firstUpdate = false
         })
         if (!RealTime) return;
-        fetch(host + "/lastUpdates/" + lastTilesUpdate).then(r => r.json()).then(updateData => {
-          console.log("Updates: " + JSON.stringify(updateData))
-          lastTilesUpdate = updateData.time
+        fetch(host + "/lastRegionUpdates/" + lastRegionUpdate).then(r => r.json()).then(updateData => {
+          lastRegionUpdate = updateData.time
           updateData.updates.forEach(update => {
-            var tile = {x: update.x + (1 << (16)), y: update.z + (1 << (16)) , z: 17}
-
-            // regularTileHandler.update(update)
+            let tile = {x: update.x + (1 << (16)), y: update.z + (1 << (16)) , z: 17}
             regularTileHandler.update(tile)
           })
-          // for (const update in updateData.updates) { //TODO why for in loop doesn't work? I hate JS
-          //   console.log("Updating tilee: " + JSON.stringify(update))
-          // }
         })
+        // fetch(host + "/lastChunkUpdates/" + lastChunkUpdate).then(r => r.json()).then(updateData => {
+        //   lastChunkUpdate = updateData.time
+        //   updateData.updates.forEach(update => {
+        //     let tile = {x: update.x + (1 << (21)), y: update.z + (1 << (21)) , z: 22}
+        //     zoomTileHandler.update(tile)
+        //   })
+        // })
       }
 
       setInterval(updateOldTiles, 1050)
