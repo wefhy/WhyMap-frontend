@@ -82,7 +82,7 @@ export default {
         mappp.openPopup(popup);
       };
 
-      mappp.on('contextmenu',pos => createContextMenu(pos.latLng));
+      mappp.on('contextmenu',pos => createContextMenu(pos.latlng));
       emitter.on('contextmenu',createContextMenu);
 
 
@@ -125,7 +125,7 @@ export default {
         let pos = new L.LatLng(player.position.lat, player.position.lng)
         thismap.panTo(pos, {noMoveStart: true});
       }).catch(function(reason) {
-        console.log("Booo: " + reason);
+        // console.log("Booo: " + reason);
       });
 
       const markerHtmlStyles = `
@@ -219,7 +219,7 @@ export default {
 
           controlPlayerPosition.updateHTML( "Player position: {x:" + player.position.x.toFixed(1) + ", y:" + player.position.y.toFixed(1) + ", z:" + player.position.z.toFixed(1) + "}")
         }).catch(function(reason) {
-          console.log("Booo: " + reason);
+          // console.log("Booo: " + reason);
         });
       }
 
