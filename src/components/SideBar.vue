@@ -146,8 +146,7 @@ export default {
       fetch("http://localhost:7542/waypoints")
           .then(response => {let tmp = response.json();console.log(tmp); return tmp})
           .then(data => {
-            this.waypoints = data.map((value, i) => {value.id = i; return value
-            })
+            this.waypoints = data.map((value, i) => {value.id = i; return value})
             this.sort()
           })
           .then(() => {
@@ -253,6 +252,21 @@ export default {
     emitter.on('movestart', () => {
       this.followPlayer = false
     })
+
+    let lastFeatureUpdate = 0
+    let updateWaypoints = () => {
+      fetch("http://localhost:7542/featureUpdates/" + lastFeatureUpdate).then(r => r.json())
+          .then(featureUpdateData => {
+            lastFeatureUpdate = featureUpdateData.time
+            featureUpdateData.updates.forEach(data => {
+              data.id = this.waypoints.length
+              this.waypoints.push(data)
+              this.sort()
+              addWaypoint(data)
+            })
+          })
+    }
+    setInterval(updateWaypoints, 4000)
 
   },
   watch: {
