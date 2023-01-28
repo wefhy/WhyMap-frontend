@@ -42,7 +42,7 @@ export default {
     },
     newWaypoint() {
       let name = prompt("Select name for the waypoint:", "");
-      emitter.emit('newWaypoint', deg2coord(this.position.lat, this.position.lng), name)
+      emitter.emit('newWaypoint', deg2coord(this.position.lat, this.position.lng), name, this.height)
       addWaypoint({name: name, loc: {lat: this.position.lat, lng: this.position.lng}})
     },
     reloadTile() {

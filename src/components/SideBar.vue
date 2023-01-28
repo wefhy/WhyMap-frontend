@@ -228,14 +228,16 @@ export default {
     }
     this.fetchWaypoints()
 
-    emitter.on('newWaypoint', (coords, name) => {
+    emitter.on('newWaypoint', (coords, name, height) => {
       console.log("Creating new waypoint "+ name +" on " + coords)
+      let h = parseInt(height)
+      if(isNaN(h)) {h = 60}
       let newWaypoint = {
         id: this.waypoints.length,
         name: name,
         pos: {
           x: Math.floor(coords[0]),
-          y: 60,//TODO get position from map!
+          y: h,
           z: Math.floor(coords[1])
         }
       }
