@@ -6,7 +6,7 @@
   <div>Biome: {{biome}}</div>
   <div>Height: {{height}}</div>
   <div>Depth: {{depth}}</div>
-  <div>Light: {{light}}</div>
+<!--  <div>Light: {{light}}</div>-->
   <button @click="centerOn">Center on</button>
   <button @click="newWaypoint">Create new waypoint</button>
 <!--  <button @click="reloadTile">Force reload tile</button>-->
