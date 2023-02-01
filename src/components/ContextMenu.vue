@@ -6,6 +6,7 @@
   <div>Biome: {{biome}}</div>
   <div>Height: {{height}}</div>
   <div>Depth: {{depth}}</div>
+<!--  <div>Raw: {{position}}</div>-->
 <!--  <div>Light: {{light}}</div>-->
   <button @click="centerOn">Center on</button>
   <button @click="newWaypoint">Create new waypoint</button>
@@ -14,7 +15,7 @@
 
 <script>
 import emitter from 'tiny-emitter/instance'
-import {addWaypoint, deg2coord, distanceToPlayer} from "../MapTools.js";
+import {addWaypoint, deg2coord, distanceToPlayer, host} from "../MapTools.js";
 export default {
   name: "ContextMenu",
   data() {
@@ -64,7 +65,7 @@ export default {
   },
   mounted() {
     let coords = this.getCoords()
-    fetch(`http://localhost:7542/block/${Math.floor(coords[0])}/${Math.floor(coords[1])}`)
+    fetch(`${host}/block/${Math.floor(coords[0])}/${Math.floor(coords[1])}`)
         .then(response => response.json())
         .then(data => {
           this.block = data.block

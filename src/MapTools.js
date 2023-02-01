@@ -6,6 +6,16 @@
 import * as L from "leaflet";
 
 import {regularNativeZoom} from "./components/LeafletMap.vue";
+import {emitter} from "tiny-emitter/instance";
+import {createApp, defineComponent} from "vue";
+import ContextMenu from "./components/ContextMenu.vue";
+import {LatLng} from "leaflet";
+import WaypointMenu from "./components/WaypointMenu.vue";
+
+export var host_base = "http://localhost"
+// export var host = `${host_base}:7542`
+export var host = (location.host.slice(-4) === "4173") ? `${host_base}:7542` : ("http://" + location.host)
+export var url = host + "/tiles/{z}/{x}/{y}?dimension={dimension}"
 
 const _rad = Math.PI / 180
 const _deg = 180 / Math.PI
@@ -78,6 +88,27 @@ export function distanceToPlayer(x, z) {
 let markers = []
 let markers2 = new Map();
 
+let createWaypointMenu = function(entry){
+    let latlng = new LatLng(entry.loc.lat, entry.loc.lng)
+    const popup = L.popup();
+    console.log(latlng);
+    const mountPoint = document.createElement('div');
+    const menu = defineComponent({
+        extends: WaypointMenu, data() {
+            return {
+                position: latlng,
+                waypoint: entry,
+                waypointName: entry.name
+            }
+        }
+    })
+    createApp(menu).mount(mountPoint)
+    popup.setContent(
+        mountPoint
+    )
+    popup.setLatLng(latlng);
+    return popup
+};
 export function addWaypoint(entry) {
     const myCustomColour = entry.color === undefined ? 'red' : entry.color
     // const myCustomColour = '#00ff00'
@@ -101,7 +132,12 @@ export function addWaypoint(entry) {
         html: `<span style="${markerHtmlStyles}" />`
     })
     // markers.push();
-    markers2.set(entry.id, L.marker([entry.loc.lat, entry.loc.lng], {icon: icon}).addTo(mappp).bindPopup(entry.name))
+    let popup = createWaypointMenu(entry)
+
+    markers2.set(entry.id, L.marker([entry.loc.lat, entry.loc.lng], {icon: icon})
+        .addTo(mappp)
+        .bindPopup(popup))
+        // .bindPopup(`${entry.name}<br><button onclick="emitter.emit('ethu', 'eu')">Delete</button>`))
 }
 
 export function popupWaypoint(i) {

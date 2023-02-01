@@ -10,16 +10,14 @@ import emitter from 'tiny-emitter/instance'
 import {
   deg2coord,
   dimensionVal,
-  FollowPlayer,
+  FollowPlayer, host,
   mappp,
   RealTime,
   setMap,
   setPlayerPosition,
-  TileHandler
+  TileHandler, url
 } from "../MapTools.js";
 
-const host = "http://localhost:7542"
-const url = host + "/tiles/{z}/{x}/{y}?dimension={dimension}"
 export const thumbnailNativeZoom = 15
 export const regularNativeZoom = 17
 export const detailNativeZoom = 22

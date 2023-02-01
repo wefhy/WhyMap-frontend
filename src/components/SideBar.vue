@@ -69,6 +69,9 @@
     <label for="animations">Fade Animations (will be ugly with real time)</label>
   </div>
   <hr>
+  <button class="fw-button" @click="forceWipeCache()">
+    Force reload (wipe cache)
+  </button>
 
 </template>
 
@@ -81,7 +84,7 @@ import {
   disableDebugGrid,
   distanceToMapCenter,
   distanceToPlayer,
-  enableDebugGrid,
+  enableDebugGrid, host, host_base,
   mappp,
   popupWaypoint, setFollowPlayer, setRealTime
 } from "../MapTools.js";
@@ -143,7 +146,7 @@ export default {
       this.waypoints = _.orderBy(this.waypoints, [waypoint => distanceToMapCenter(waypoint.pos.x, waypoint.pos.z)], [this.reverse ? 'desc' : 'asc'])
     },
     fetchWaypoints() {
-      fetch("http://localhost:7542/waypoints")
+      fetch(host + "/waypoints")
           .then(response => {let tmp = response.json();console.log(tmp); return tmp})
           .then(data => {
             this.waypoints = data.map((value, i) => {value.id = i; return value})
@@ -171,7 +174,7 @@ export default {
       this.waypoints = _.shuffle(this.waypoints)
     },
     sort() {
-      console.log("sorting by: " + this.sorting + ", reverse: " + (this.reverse ? 'yes' : 'no') + this.reverse)
+      // console.log("sorting by: " + this.sorting + ", reverse: " + (this.reverse ? 'yes' : 'no') + this.reverse)
       switch(this.sorting) {
         case 'name': this.sortByName(); break;
         case 'newest': this.sortByNewest(); break;
@@ -186,7 +189,7 @@ export default {
         let waypoints = e.target.result
         // console.log(reader.result)
         // console.log(reader.result.split('\n'))
-        fetch("http://localhost:7542/importWaypoints", {
+        fetch(host+"/importWaypoints", {
           method: 'POST',
           headers: {
             'Content-Type': 'text/plain'
@@ -199,6 +202,9 @@ export default {
       let file = event.target.files[0]
       // console.log(file);
       reader.readAsText(file)
+    },
+    forceWipeCache() {
+      fetch(host+"/forceWipeCache")
     }
   },
   mounted() {
@@ -227,6 +233,7 @@ export default {
       this.showDistance = localStorage.showDistance === 'true';
     }
     this.fetchWaypoints()
+    emitter.on('refreshWaypoints', this.fetchWaypoints)
 
     emitter.on('newWaypoint', (coords, name, height) => {
       console.log("Creating new waypoint "+ name +" on " + coords)
@@ -243,7 +250,7 @@ export default {
       }
       this.waypoints.push(newWaypoint)
       this.sort()
-      fetch("http://localhost:7542/waypoint", {
+      fetch(host+"/waypoint", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -257,7 +264,7 @@ export default {
 
     let lastFeatureUpdate = 0
     let updateWaypoints = () => {
-      fetch("http://localhost:7542/featureUpdates/" + lastFeatureUpdate).then(r => r.json())
+      fetch(host+"/featureUpdates/" + lastFeatureUpdate).then(r => r.json())
           .then(featureUpdateData => {
             lastFeatureUpdate = featureUpdateData.time
             featureUpdateData.updates.forEach(data => {
@@ -269,6 +276,38 @@ export default {
           })
     }
     setInterval(updateWaypoints, 4000)
+
+    let portsToCheck = [
+        7542, 7543, 7544, 7545, 7546, 7547, 7548, 7549, 7550, 7551
+    ]
+
+    // let updateAvailablePlayers = () => {
+    //   let sURL = 'http://localhost:7543';
+    //   $.getJSON(sURL, function (json)
+    //   {
+    //     console.log('json from web-service ->', json);
+    //   })
+    //   .fail(function()
+    //   {
+    //     console.log("error - could not get json data from service");
+    //   });
+    // }
+    function getAvailablePlayers(callback)  {
+      portsToCheck.map(port => fetch(`${host_base}:${port}/player`)
+          // .then(r => r.json())
+          .then(r => {
+            if (r.ok) {
+              return r.json();
+            }
+            throw new Error('Something went wrong');
+          })
+          .then(player => {
+            callback({name: player.name, port: port})
+          }).catch(error => console.log(`dupa zbita${error}`)))
+    }
+
+    // setInterval(updateAvailablePlayers, 1500)
+
 
   },
   watch: {
