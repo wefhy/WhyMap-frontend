@@ -57,6 +57,10 @@
     <input  type="file" id="myfile" name="myfile" accept="text/plain" @change="uploadWaypoints">
   </div>
   <div style="padding: 8px">
+    <input type="checkbox" id="showDeaths" value="Show Deathpoints" v-model="showDeaths">
+    <label for="showDeaths">Show Deathpoints</label>
+  </div>
+  <div style="padding: 8px">
     <input type="checkbox" id="debugGrid" value="Debug Grid" v-model="debugGrid">
     <label for="debugGrid">Debug Grid</label>
   </div>
@@ -107,7 +111,8 @@ export default {
       realTime: false,
       followPlayer: false,
       nextId: 0,
-      waypoints: []
+      waypoints: [],
+      showDeaths: true
     }
   },
   computed: {
@@ -146,7 +151,7 @@ export default {
       this.waypoints = _.orderBy(this.waypoints, [waypoint => distanceToMapCenter(waypoint.pos.x, waypoint.pos.z)], [this.reverse ? 'desc' : 'asc'])
     },
     fetchWaypoints() {
-      fetch(host + "/waypoints")
+      fetch(`${host}/waypoints?deaths=${this.showDeaths}`)
           .then(response => {let tmp = response.json();console.log(tmp); return tmp})
           .then(data => {
             this.waypoints = data.map((value, i) => {value.id = i; return value})
@@ -231,6 +236,9 @@ export default {
     }
     if (localStorage.showDistance) {
       this.showDistance = localStorage.showDistance === 'true';
+    }
+    if (localStorage.showDeaths) {
+      this.showDeaths = localStorage.showDeaths === 'true';
     }
     this.fetchWaypoints()
     emitter.on('refreshWaypoints', this.fetchWaypoints)
@@ -350,6 +358,10 @@ export default {
     },
     showDistance(newShowDistance) {
       localStorage.showDistance = newShowDistance
+    },
+    showDeaths(newShowDeaths) {
+      localStorage.showDeaths = newShowDeaths
+      this.fetchWaypoints()
     }
   }
 }
