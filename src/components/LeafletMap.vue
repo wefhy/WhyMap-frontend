@@ -17,6 +17,7 @@ import {
   setPlayerPosition,
   TileHandler, url
 } from "../MapTools.js";
+import AreaMenu from "../components/AreaMenu.vue";
 
 export const thumbnailNativeZoom = 15
 export const regularNativeZoom = 17
@@ -79,6 +80,25 @@ export default {
         pointPopup.setLatLng(latlng);
         mappp.openPopup(pointPopup);
       };
+      const areaPopup = L.popup();
+      let createAreaMenu = function(bounds){
+          console.log(bounds.toBBoxString());
+          const mountPoint = document.createElement('div');
+          const menu = defineComponent({
+              extends: AreaMenu, data() {
+                  return {
+                      posStart: bounds.getNorthWest(),
+                      posEnd: bounds.getSouthEast()
+                  }
+              }
+          })
+          createApp(menu).mount(mountPoint)
+          areaPopup.setContent(
+              mountPoint
+          )
+          areaPopup.setLatLng(bounds.getCenter());
+          mappp.openPopup(areaPopup);
+      };
 // add an event listener to the map to start drawing on right-click
       let isDrawing = false;
       let startPoint;
@@ -116,11 +136,7 @@ export default {
                       //     .openOn(mappp);
                   } else {
                       // User has dragged to select an area
-                      let popupContent = "Selected area: <button>hello</button>" + bounds.toBBoxString();
-                      L.popup()
-                          .setLatLng(bounds.getCenter())
-                          .setContent(popupContent)
-                          .openOn(mappp);
+                      createAreaMenu(bounds);
                       L.rectangle(bounds, {color: "red"}).addTo(drawnItems);
                   }
               }

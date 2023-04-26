@@ -52,6 +52,15 @@ export function deg2coord(lat, lng) {
         ((normalized[1] - 0.5) * scale).toFixed(1)
     ]
 }
+export function deg2coordInt(lat, lng) {
+    let normalized = deg2normalized(lat, lng)
+    let scale = Math.pow(2, 26)
+    return [
+        Math.round((normalized[0] - 0.5) * scale),
+        Math.round((normalized[1] - 0.5) * scale)
+    ]
+}
+
 function normalized2deg(x, y) {
     let lng = x * 360 - 180
     let lat = Math.atan(Math.sinh(Math.PI * (1 - 2 * y))) * 180 / Math.PI
