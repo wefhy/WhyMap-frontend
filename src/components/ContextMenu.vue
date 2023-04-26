@@ -10,6 +10,7 @@
 <!--  <div>Light: {{light}}</div>-->
   <button @click="centerOn">Center on</button>
   <button @click="newWaypoint">Create new waypoint</button>
+  <button @click="reloadTile">Reload tile</button>
 <!--  <button @click="reloadTile">Force reload tile</button>-->
 </template>
 
@@ -47,7 +48,8 @@ export default {
       addWaypoint({name: name, loc: {lat: this.position.lat, lng: this.position.lng}})
     },
     reloadTile() {
-
+      let coords = this.getCoords()
+      fetch(`${host}/reloadTileWithBlock/${Math.floor(coords[0])}/${Math.floor(coords[1])}`)
     },
     getCoords() {
       return deg2coord(this.position.lat, this.position.lng)

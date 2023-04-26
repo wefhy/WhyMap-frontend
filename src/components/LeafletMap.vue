@@ -61,7 +61,7 @@ export default {
       let zoomTileHandler = new TileHandler(zoomTiles)
       let regularTileHandler = new TileHandler(regularTiles)
 
-      const popup = L.popup();
+      const pointPopup = L.popup();
       let createContextMenu = function(latlng){
         console.log(latlng);
         const mountPoint = document.createElement('div');
@@ -73,12 +73,71 @@ export default {
           }
         })
         createApp(menu).mount(mountPoint)
-        popup.setContent(
+        pointPopup.setContent(
             mountPoint
         )
-        popup.setLatLng(latlng);
-        mappp.openPopup(popup);
+        pointPopup.setLatLng(latlng);
+        mappp.openPopup(pointPopup);
       };
+// add an event listener to the map to start drawing on right-click
+      let isDrawing = false;
+      let startPoint;
+      let drawnItems = new L.FeatureGroup().addTo(mappp);
+      function onMove(event) {
+          let endPoint = event.latlng;
+          let bounds = L.latLngBounds(startPoint, endPoint);
+          if (drawnItems.getLayers().length) {
+              drawnItems.clearLayers();
+          }
+          L.rectangle(bounds, {color: "red"}).addTo(drawnItems);
+      }
+      mappp.on('mousedown', function(event) {
+          if (event.originalEvent.button === 2) { // 2 represents the right mouse button
+              startPoint = event.latlng;
+              if (!isDrawing) {
+                  isDrawing = true;
+                  L.DomEvent.on(mappp, 'mousemove', onMove);
+              }
+          }
+      });
+      mappp.on('mouseup', function(event) {
+          if (event.originalEvent.button === 2) { // 2 represents the right mouse button
+              if (isDrawing) {
+                  L.DomEvent.off(mappp, 'mousemove', onMove);
+                  isDrawing = false;
+                  let endPoint = event.latlng;
+                  let bounds = L.latLngBounds(startPoint, endPoint);
+                  if (startPoint.equals(endPoint)) {
+                      // User has clicked without dragging
+                      // let popupContent = "Selected point: " + startPoint.toString();
+                      // L.popup()
+                      //     .setLatLng(startPoint)
+                      //     .setContent(popupContent)
+                      //     .openOn(mappp);
+                  } else {
+                      // User has dragged to select an area
+                      let popupContent = "Selected area: <button>hello</button>" + bounds.toBBoxString();
+                      L.popup()
+                          .setLatLng(bounds.getCenter())
+                          .setContent(popupContent)
+                          .openOn(mappp);
+                      L.rectangle(bounds, {color: "red"}).addTo(drawnItems);
+                  }
+              }
+          }
+      });
+
+// add an event listener to the drawnItems to remove them on click
+      drawnItems.on('click', function(event) {
+          drawnItems.clearLayers();
+          // drawnItems.removeLayer(event.layer);
+      });
+
+      mappp.on('click', function() {
+          // mappp.off('click');
+          drawnItems.clearLayers();
+      });
+
 
       mappp.on('contextmenu',pos => createContextMenu(pos.latlng));
       emitter.on('contextmenu',createContextMenu);
