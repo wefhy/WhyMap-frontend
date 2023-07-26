@@ -25,6 +25,7 @@
     <div>Resolution: {{ outX }}x{{ outY }} ({{ megapixel }}MP)</div>
     <button @click="exportArea">Export area</button>
     <button @click="showStats">Show statistics</button>
+    <button @click="browseIn3d">Browse in 3D</button>
 </template>
 
 <script>
@@ -59,14 +60,17 @@ export default {
     methods: {
         showStats() {
             fetch(`${host}/analyzeArea/${this.areaStart[0]}/${this.areaStart[1]}/${this.areaEnd[0]}/${this.areaEnd[1]}`)
-                .then(response => response.json())
+                .then(response => response.text())
                 .then(data => {
-                    alert(JSON.stringify(data, null, 2))
+                    alert(data)
                 })
         },
         exportArea() {
             open(`${host}/exportArea/${this.areaStart[0]}/${this.areaStart[1]}/${this.areaEnd[0]}/${this.areaEnd[1]}/${this.format}/${this.scale}`, '_blank').focus()
             // fetch(`${host}/exportArea/${this.areaStart[0]}/${this.areaStart[1]}/${this.areaEnd[0]}/${this.areaEnd[1]}/${this.format}`)
+        },
+        browseIn3d() {
+            open(`${host}/three/index.html?x1=${this.areaStart[0]}&z1=${this.areaStart[1]}&x2=${this.areaEnd[0]}&z2=${this.areaEnd[1]}`, '_blank').focus()
         }
     },
     mounted() {
