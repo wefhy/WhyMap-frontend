@@ -11,6 +11,9 @@
   <button @click="centerOn">Center on</button>
   <button @click="newWaypoint">Create new waypoint</button>
   <button @click="reloadTile">Reload tile</button>
+  <br>
+  <button @click="browse3dSmall">Browse small area in 3D</button>
+  <button @click="browse3dBig">Browse big area in 3D</button>
 <!--  <button @click="reloadTile">Force reload tile</button>-->
 </template>
 
@@ -53,6 +56,14 @@ export default {
     },
     getCoords() {
       return deg2coord(this.position.lat, this.position.lng)
+    },
+    browse3dSmall() {
+      let coords = this.getCoords()
+      open(`${host}/three/browseSmall?x=${coords[0]}&z=${coords[1]}`, '_blank').focus()
+    },
+    browse3dBig() {
+      let coords = this.getCoords()
+      open(`${host}/three/browseBig?x=${coords[0]}&z=${coords[1]}`, '_blank').focus()
     },
     getBiome() {
       return "not implemented yet"
