@@ -7,7 +7,7 @@
   <div>Height: {{height}}</div>
   <div>Depth: {{depth}}</div>
 <!--  <div>Raw: {{position}}</div>-->
-<!--  <div>Light: {{light}}</div>-->
+  <div>Light: {{light}}</div>
   <button @click="centerOn">Center on</button>
   <button @click="newWaypoint">Create new waypoint</button>
   <button @click="reloadTile">Reload tile</button>
