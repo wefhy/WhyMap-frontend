@@ -107,7 +107,8 @@ let createWaypointMenu = function(entry){
             return {
                 position: latlng,
                 waypoint: entry,
-                waypointName: entry.name
+                waypointName: entry.name,
+                color: entry.color
             }
         }
     })

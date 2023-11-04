@@ -6,19 +6,28 @@
   <div>Biome: {{biome}}</div>
   <div>Height: {{height}}</div>
   <div>Depth: {{depth}}</div>
-<!--  <div>Raw: {{position}}</div>-->
+  <!--  <div>Raw: {{position}}</div>-->
   <div>Light: {{light}}</div>
   <button @click="centerOn">Center on</button>
-  <button @click="newWaypoint">Create new waypoint</button>
-  <button @click="reloadTile">Reload tile</button>
+<!--    <button @click="reloadTile">Reload tile</button>-->
   <br>
-  <button @click="browse3dSmall">Browse small area in 3D</button>
-  <button @click="browse3dBig">Browse big area in 3D</button>
+  <button @click="browse3dSmall">Small area in 3D</button>
+  <button @click="browse3dBig">Big area in 3D</button>
+  <hr>
+  <label for="name">Waypoint name:</label>
+  <input type="text" id="name" v-model="wayPointName" />
+  <input id="color" type="color" v-model="selectedColor"/>
+  <br>
+
+  <button @click="newWaypoint">Create new waypoint</button>
+
 <!--  <button @click="reloadTile">Force reload tile</button>-->
 </template>
 
 <script>
 import emitter from 'tiny-emitter/instance'
+// import jscolor from '@eastdesire/jscolor/jscolor';
+// import '@eastdesire/jscolor/jscolor';
 import {addWaypoint, deg2coord, distanceToPlayer, host} from "../MapTools.js";
 export default {
   name: "ContextMenu",
@@ -31,7 +40,10 @@ export default {
       biome: "fetching...",
       height: "fetching...",
       depth: "fetching...",
-      light: "fetching..."
+      light: "fetching...",
+      showPicker: false,
+      selectedColor: "#ff0000", //TODO save this in local storage
+      wayPointName: ""
     }
   },
   computed: {
@@ -46,9 +58,9 @@ export default {
       emitter.emit('centerOn', this.position)
     },
     newWaypoint() {
-      let name = prompt("Select name for the waypoint:", "");
-      emitter.emit('newWaypoint', deg2coord(this.position.lat, this.position.lng), name, this.height)
-      addWaypoint({name: name, loc: {lat: this.position.lat, lng: this.position.lng}})
+      // let name = prompt("Select name for the waypoint:", "");
+      emitter.emit('newWaypoint', deg2coord(this.position.lat, this.position.lng), this.wayPointName, this.height, this.selectedColor)
+      addWaypoint({name: this.wayPointName, loc: {lat: this.position.lat, lng: this.position.lng}, color: this.selectedColor})
     },
     reloadTile() {
       let coords = this.getCoords()
@@ -77,6 +89,12 @@ export default {
 
   },
   mounted() {
+    // var input = document.getElementById('jsc')
+    // input = this.$refs.jsc
+    // var picker = new jscolor(input)
+    // picker.fromString('CFD8DC')
+    // window.jscolor.installByClassName('jscolor');
+    // jscolor.installByClassName('jscolor');
     let coords = this.getCoords()
     fetch(`${host}/block/${Math.floor(coords[0])}/${Math.floor(coords[1])}`)
         .then(response => response.json())

@@ -243,7 +243,7 @@ export default {
     this.fetchWaypoints()
     emitter.on('refreshWaypoints', this.fetchWaypoints)
 
-    emitter.on('newWaypoint', (coords, name, height) => {
+    emitter.on('newWaypoint', (coords, name, height, color) => {
       console.log("Creating new waypoint "+ name +" on " + coords)
       let h = parseInt(height)
       if(isNaN(h)) {h = 60}
@@ -254,7 +254,8 @@ export default {
           x: Math.floor(coords[0]),
           y: h,
           z: Math.floor(coords[1])
-        }
+        },
+        color: color
       }
       this.waypoints.push(newWaypoint)
       this.sort()
